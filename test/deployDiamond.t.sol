@@ -7,9 +7,9 @@ import "../contracts/facets/DiamondLoupeFacet.sol";
 import "../contracts/facets/OwnershipFacet.sol";
 
 import "../contracts/facets/ERC20Facet.sol";
-import "../contracts/facets/AuctionMarketPlaceFaucet.sol";
+import "../contracts/facets/AuctionNFTMarketFacet.sol";
 
-import "../contracts/NFTONE.sol";
+import "../contracts/AuctionNFT.sol";
 import "forge-std/Test.sol";
 import "../contracts/Diamond.sol";
 
@@ -20,15 +20,15 @@ contract DiamondDeployer is Test, IDiamondCut {
     DiamondLoupeFacet dLoupe;
     OwnershipFacet ownerF;
     ERC20Facet erc20Facet;
-    AuctionMarketPlaceFaucet auctionFaucet;
-    NFTONE nft;
+    AuctionNFTMarketFacet auctionFacet;
+    AuctionNFT nft;
 
     address A = address(0xa);
     address B = address(0xb);
     address C = address(0xc);
     address D = address(0xd);
 
-    AuctionMarketPlaceFaucet boundAuctionMarketPlace;
+    AuctionNFTMarketFacet boundAuctionNFTMarketFacet;
 
     function setUp() public {
         //deploy facets
@@ -37,8 +37,8 @@ contract DiamondDeployer is Test, IDiamondCut {
         dLoupe = new DiamondLoupeFacet();
         ownerF = new OwnershipFacet();
         erc20Facet = new ERC20Facet();
-        auctionFaucet = new AuctionMarketPlaceFaucet();
-        nft = new NFTONE();
+        auctionFacet = new AuctionNFTMarketFacet();
+        nft = new AuctionNFT();
 
         //upgrade diamond with facets
 
@@ -71,9 +71,9 @@ contract DiamondDeployer is Test, IDiamondCut {
 
         cut[3] = (
             FacetCut({
-                facetAddress: address(auctionFaucet),
+                facetAddress: address(auctionFacet),
                 action: FacetCutAction.Add,
-                functionSelectors: generateSelectors("AuctionMarketPlaceFaucet")
+                functionSelectors: generateSelectors("AuctionNFTMarketFacet")
             })
         );
 
@@ -95,7 +95,7 @@ contract DiamondDeployer is Test, IDiamondCut {
         ERC20Facet(address(diamond)).mintTo(D);
 
         // bind the auction market place
-        boundAuctionMarketPlace = AuctionMarketPlaceFaucet(address(diamond));
+        boundAuctionNFTMarketFacet = AuctionNFTMarketFacet(address(diamond));
     }
 
     function generateSelectors(

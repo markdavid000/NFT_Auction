@@ -8,14 +8,14 @@ import {IERC1155} from "../interfaces/IERC1155.sol";
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract AuctionMarketFacet is IERC721Receiver {
+contract AuctionNFTMarketFacet is IERC721Receiver {
     LibAppStorage.AppStorage internal l;
 
     // Array to store all the auctions
     LibAppStorage.Auction[] public allAuctions;
 
     function name() external pure returns (string memory) {
-        return "Auction NFT MarketPlace";
+        return "Auction NFT Market";
     }
 
     function createAuction(
@@ -30,20 +30,20 @@ contract AuctionMarketFacet is IERC721Receiver {
             _category == LibAppStorage.Categories.ERC721 ||
                 _category == LibAppStorage.Categories.ERC1155 ||
                 _category == LibAppStorage.Categories.Both,
-            "AuctionMarketPlace: invalid category"
+            "AuctionMarketPlace: Invalid category"
         );
         require(
             _endAuction > block.timestamp,
-            "AuctionMarketPlace: endAuction must be in the future"
+            "AuctionMarketPlace: Auction must be in the future"
         );
         require(
             _minBid > 0,
-            "AuctionMarketPlace: minBid must be greater than 0"
+            "AuctionMarketPlace: Minimum Bid must be greater than 0"
         );
 
         require(
             LibAppStorage.isContract(_addressNFTCollection),
-            "AuctionMarketPlace: invalid NFT Collection address"
+            "AuctionMarketPlace: Invalid NFT Collection address"
         );
 
         // if (_category == LibAppStorage.Categories.ERC721) {
@@ -56,13 +56,13 @@ contract AuctionMarketFacet is IERC721Receiver {
 
         require(
             nftCollection.ownerOf(_nftTokenId) == msg.sender,
-            "AuctionMarketPlace: not owner of NFT"
+            "AuctionMarketPlace: You're not the owner of the NFT"
         );
 
         // check if owner has approved the marketplace to transfer the NFT
         require(
             nftCollection.getApproved(_nftTokenId) == address(this),
-            "AuctionMarketPlace: not approved to transfer NFT"
+            "AuctionMarketPlace: You're not approved to transfer the NFT"
         );
 
         // transfer the NFT to the marketplace
@@ -133,7 +133,7 @@ contract AuctionMarketFacet is IERC721Receiver {
         // check auction exists
         require(
             _auctionIndex < allAuctions.length,
-            "AuctionMarketPlace: auction does not exist"
+            "AuctionMarketPlace: Auction does not exist"
         );
 
         LibAppStorage.Auction storage auction = allAuctions[
@@ -143,24 +143,24 @@ contract AuctionMarketFacet is IERC721Receiver {
         // check auction is open
         require(
             isAuctionOpen(_auctionIndex),
-            "AuctionMarketPlace: auction is closed"
+            "AuctionMarketPlace: Auction closed"
         );
 
         require(
             _bidAmount > auction.minBid,
-            "AuctionMarketPlace: bid amount is less than minBid"
+            "AuctionMarketPlace: Bid amount is less than the minimum Bid"
         );
 
         // checck if new bid is greater than current bid
         require(
             _bidAmount > auction.currentBidPrice,
-            "AuctionMarketPlace: bid amount is less than current bid"
+            "AuctionMarketPlace: Bid amount is less than the current bid"
         );
 
         // check if the bidder is not the creator
         require(
             msg.sender != auction.auctionCreator,
-            "AuctionMarketPlace: creator cannot bid"
+            "AuctionMarketPlace: The creator cannot place a bid"
         );
 
         // get the erc20 token
@@ -169,7 +169,7 @@ contract AuctionMarketFacet is IERC721Receiver {
         if (auction.currentBidOwner == address(0)) {
             require(
                 paymentToken.allowance(msg.sender, address(this)) >= _bidAmount,
-                "AuctionMarketPlace: not enough allowance to transfer"
+                "AuctionMarketPlace: Not enough allowance to transfer"
             );
 
             require(
@@ -178,7 +178,7 @@ contract AuctionMarketFacet is IERC721Receiver {
                     address(this),
                     _bidAmount
                 ),
-                "AuctionMarketPlace: failed to transfer bid amount"
+                "AuctionMarketPlace: bid amount transfer failed"
             );
         }
 
@@ -210,12 +210,12 @@ contract AuctionMarketFacet is IERC721Receiver {
                     address(this),
                     totalDebit
                 ),
-                "AuctionMarketPlace: failed to transfer bid amount"
+                "AuctionMarketPlace: bid amount transfer failed"
             );
 
             require(
                 paymentToken.transfer(auction.currentBidOwner, totalCredit),
-                "AuctionMarketPlace: failed to transfer previous bid amount"
+                "AuctionMarketPlace: previous bid amount transfer failed"
             );
 
             // send to other guys
@@ -264,7 +264,7 @@ contract AuctionMarketFacet is IERC721Receiver {
         // check if the caller is the winner
         require(
             msg.sender == auction.currentBidOwner,
-            "AuctionMarketPlace: not the winner"
+            "AuctionMarketPlace: You're not the winner"
         );
 
         // get the NFT collection
@@ -285,7 +285,7 @@ contract AuctionMarketFacet is IERC721Receiver {
                 auction.auctionCreator,
                 auction.currentBidPrice
             ),
-            "AuctionMarketPlace: failed to transfer bid amount"
+            "AuctionMarketPlace: bid amount transfer failed"
         );
 
         // emit the event
@@ -317,7 +317,7 @@ contract AuctionMarketFacet is IERC721Receiver {
         // check if the caller is the creator
         require(
             msg.sender == auction.auctionCreator,
-            "AuctionMarketPlace: not the creator"
+            "AuctionMarketPlace: You're not the creator"
         );
 
         // get the NFT collection
@@ -338,7 +338,7 @@ contract AuctionMarketFacet is IERC721Receiver {
                 auction.auctionCreator,
                 auction.currentBidPrice
             ),
-            "AuctionMarketPlace: failed to transfer bid amount"
+            "AuctionMarketPlace: bid amount transfer failed"
         );
 
         // emit the event
@@ -376,7 +376,7 @@ contract AuctionMarketFacet is IERC721Receiver {
         //  check bidder count and currrent Bid Owner is 0
         require(
             auction.bidCount == 0 && auction.currentBidOwner == address(0),
-            "AuctionMarketPlace: auction has bids"
+            "AuctionMarketPlace: This auction has bids"
         );
 
         // get the NFT collection

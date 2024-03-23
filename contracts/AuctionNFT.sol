@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Base64.sol";
 
-contract NFTONE {
+contract AuctionNFT {
     mapping(uint256 tokenId => address) owners;
     mapping(address owner => uint256) balances;
     mapping(uint256 tokenId => address) tokenApprovals;
@@ -30,7 +30,7 @@ contract NFTONE {
     }
 
     function approve(address _to, uint256 _tokenId) external {
-        require(_to != address(0), "ERC721: Approval to the zero address");
+        require(_to != address(0), "ERC721: Can't approve zero address");
         require(
             owners[_tokenId] == msg.sender,
             "ERC721: you're not the owner"
@@ -68,17 +68,17 @@ contract NFTONE {
     function _transfer(address _from, address _to, uint256 _tokenId) internal {
         require(
             _from != address(0),
-            "ERC721: transfer of token that is not own"
+            "ERC721: Can't transfer from zero address"
         );
-        require(_to != address(0), "ERC721: transfer to the zero address");
+        require(_to != address(0), "ERC721: Can't transfer to zero address");
         require(
             owners[_tokenId] == msg.sender ||
                 tokenApprovals[_tokenId] == msg.sender,
-            "ERC721: transfer caller is not owner nor approved"
+            "ERC721:  The caller is not the owner or approved"
         );
         require(
             owners[_tokenId] == _from,
-            "ERC721: transfer of token that is not own"
+            "ERC721: You're not the owner of the token"
         );
         tokenApprovals[_tokenId] = address(0);
         owners[_tokenId] = _to;
@@ -95,7 +95,7 @@ contract NFTONE {
     ) internal pure returns (string memory) {
         bytes memory svg = abi.encodePacked(
             '<svg id="sw-js-blob-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">',
-            '<defs><linearGradient id="sw-gradient"><stop id="stop1" stop-color="rgb(248, 117, 55)" offset="0%"></stop><stop id="stop2" stop-color="rgb(251, 168, 31)" offset="100%"></stop></linearGradient></defs>',
+            '<defs><linearGradient id="sw-gradient"><stop id="stop1" stop-color="#020826" offset="0%"></stop><stop id="stop2" stop-color="#030f50" offset="100%"></stop></linearGradient></defs>',
             '<path fill="url(#sw-gradient)" d="M 17.5 -19.2 C 25 -14.5 35.1 -11.2 37.9 -5.2 C 40.7 0.7 36.1 9.5 30.4 15.7 C 24.6 22 17.7 25.8 10.8 27.3 C 3.9 28.8 -3 28 -10 26.1 C -16.9 24.1 -24 21 -29.9 15.1 C -35.8 9.3 -40.5 0.7 -38.3 -5.9 C -36.2 -12.5 -27.1 -16.9 -19.5 -21.7 C -12 -26.4 -6 -31.5 -0.5 -30.8 C 5 -30.2 9.9 -24 17.5 -19.2 Z" transform="matrix(1,0,0,1,50,50)" style="transition: all 0.3s ease 0s" stroke="url(#sw-gradient)"></path>',
             '<text font-size="12" x="25" y="50" fill="rgb(255, 255, 255)">',
             Strings.toString(_tokenId),
@@ -117,10 +117,10 @@ contract NFTONE {
         string memory id = Strings.toString(_tokenId);
         bytes memory dataURI = abi.encodePacked(
             "{",
-            '"name": "YDM TEST #',
+            '"name": "AUCTION #',
             id,
             '",',
-            '"description": "Test contract for my market place ',
+            '"description": "This is a test NFT ',
             id,
             '",',
             '"image": "',
