@@ -14,9 +14,9 @@ contract AuctionNFTMarketFacet is IERC721Receiver {
     // Array to store all the auctions
     LibAppStorage.Auction[] public allAuctions;
 
-    function name() external pure returns (string memory) {
-        return "Auction NFT Market";
-    }
+    // function name() external pure returns (string memory) {
+    //     return "Auction Market";
+    // }
 
     function createAuction(
         LibAppStorage.Categories _category,
@@ -167,10 +167,10 @@ contract AuctionNFTMarketFacet is IERC721Receiver {
         IERC20 paymentToken = IERC20(auction.addressPaymentToken);
 
         if (auction.currentBidOwner == address(0)) {
-            require(
-                paymentToken.allowance(msg.sender, address(this)) >= _bidAmount,
-                "AuctionMarketPlace: Not enough allowance to transfer"
-            );
+            // require(
+            //     paymentToken.allowance(msg.sender, address(this)) >= _bidAmount,
+            //     "AuctionMarketPlace: Not enough allowance to transfer"
+            // );
 
             require(
                 paymentToken.transferFrom(
@@ -192,10 +192,10 @@ contract AuctionNFTMarketFacet is IERC721Receiver {
             );
 
             uint256 burned = calculateIncentiveBurned(totalFee);
-            uint256 dao = calculateIncentiveDAO(totalFee);
+            // uint256 dao = calculateIncentiveDAO(totalFee);
             uint256 outbid = calculateIncentiveOutbid(totalFee);
-            uint256 team = calculateIncentiveTeam(totalFee);
-            uint256 lastAddress = calculateIncentiveLastAddress(totalFee);
+            // uint256 team = calculateIncentiveTeam(totalFee);
+            // uint256 lastAddress = calculateIncentiveLastAddress(totalFee);
 
             // total amount to debit
             uint256 totalDebit = totalFee + _bidAmount;
